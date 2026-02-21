@@ -1,0 +1,3508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>QR Inventory</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+/* ====================================
+   QR INVENTORY - CSS COMPLET
+   ==================================== */
+* { margin: 0; padding: 0; 
+    box-sizing: border-box; 
+    -webkit-tap-highlight-color: transparent; 
+  }
+
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --violet: #7C3AED;
+  --violet-light: #C4B5FD;
+  --violet-dark: #6D28D9;
+  
+  --gray-50: #fafafa;
+  --gray-100: #f5f5f5;
+  --gray-200: #e5e5e5;
+  --gray-300: #d4d4d4;
+  --gray-400: #a3a3a3;
+  --gray-500: #737373;
+  --gray-600: #525252;
+  --gray-700: #404040;
+  --gray-800: #262626;
+  --gray-900: #171717;
+  
+  --red: #ef4444;
+  --red-light: #fee2e2;
+  --green: #10b981;
+  --green-light: #d1fae5;
+  --blue: #3b82f6;
+  --blue-light: #dbeafe;
+  --yellow: #f59e0b;
+  --yellow-light: #fef3c7;
+  
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+}
+
+body {
+  background: var(--white);
+  color: var(--black);
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  display: none;
+  position: absolute;
+  inset: 0;
+  min-height: 100vh;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+}
+.screen:not(.login-screen) {
+  padding-bottom: 100px;
+}
+
+
+
+/* ====================================
+   🔐 LOGIN SCREEN
+   ==================================== */
+.login-screen {
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--violet) 0%, var(--violet-dark) 100%);
+  padding: 24px;
+}
+
+
+.login-card {
+  background: var(--white);
+  border-radius: 24px;
+  padding: 48px 32px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  background: var(--black);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+}
+
+.login-logo svg {
+  width: 40px;
+  height: 40px;
+  color: var(--white);
+}
+
+.login-title {
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+
+.login-subtitle {
+  font-size: 15px;
+  color: var(--gray-600);
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 8px;
+}
+
+.form-input, .form-select {
+  width: 100%;
+  padding: 16px;
+  border: 2px solid var(--gray-200);
+  border-radius: 12px;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--violet);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.1);
+}
+
+.form-input:disabled {
+  background: var(--gray-50);
+  color: var(--gray-500);
+}
+
+.btn-login, .btn-submit {
+  width: 100%;
+  padding: 18px;
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: 12px;
+  font-size: 17px;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: 24px;
+  transition: all 0.2s;
+}
+
+.btn-login:active, .btn-submit:active {
+  transform: scale(0.98);
+}
+
+/* ====================================
+   🏠 HOME SCREEN
+   ==================================== */
+.home-screen {
+  flex-direction: column;      /* disposition verticale */
+  align-items: stretch;        /* prend toute la largeur */
+  justify-content: flex-start; /* commence en haut */
+  overflow-y: auto;            /* scroll vertical */
+  padding-bottom: 100px;       /* espace bas si navbar fixe */
+  background: var(--gray-50);  /* ou ta couleur précédente */
+}
+.home-screen .home-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+}
+
+/* .home-header {
+  background: var(--white);
+  padding: 24px;
+  border-bottom: 1px solid var(--gray-200);
+} */
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.menu-burger {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--gray-100);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.menu-burger svg {
+  width: 24px;
+  height: 24px;
+}
+
+.user-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--violet);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.welcome-text {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+.home-screen .home-container {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 24px;
+}
+/* .home-content {
+  padding: 24px;
+} */
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin: 2%;
+}
+
+.action-card {
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 28px 24px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.action-card:active {
+  transform: scale(0.98);
+  border-color: var(--black);
+}
+
+.action-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-icon svg {
+  width: 28px;
+  height: 28px;
+  color: currentColor;
+}
+
+.action-title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.2px;
+}
+
+.action-card.selection .action-icon {
+  background: var(--yellow-light);
+  color: var(--yellow);
+}
+
+.action-card.checkin .action-icon {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.action-card.checkout .action-icon {
+  background: var(--red-light);
+  color: var(--red);
+}
+
+.action-card.pitch .action-icon {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+.action-card.details .action-icon {
+  background: var(--violet-light);
+  color: var(--violet);
+}
+
+.action-card.qc .action-icon {
+  background: #fce7f3;
+  color: #ec4899;
+}
+
+/* ====================================
+   🍔 SIDEBAR
+   ==================================== */
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+  z-index: 999;
+}
+
+.sidebar-overlay.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -100%;
+  width: 300px;
+  height: 100vh;
+  background: var(--white);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+  transition: left 0.3s;
+  z-index: 1000;
+}
+
+.sidebar.active {
+  left: 0;
+}
+
+.sidebar-header {
+  padding: 32px 24px;
+  background: linear-gradient(135deg, var(--violet) 0%, var(--violet-dark) 100%);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.sidebar-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--violet);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.sidebar-user-info h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 4px;
+}
+
+.sidebar-user-info p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.sidebar-menu {
+  padding: 24px 20px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 8px;
+}
+
+.sidebar-item svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sidebar-item:active {
+  background: var(--gray-100);
+}
+
+.sidebar-item.danger {
+  color: var(--red);
+}
+
+/* ====================================
+   📱 BOTTOM NAV
+   ==================================== */
+
+.bottom-nav {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--black);
+  border-radius: 50px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  justify-items: auto;
+  padding: 6px 20px; 
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 999;
+  width: calc(100% - 40px);
+  max-width: 500px;
+}
+
+.nav-icon {
+  min-width: 20px;
+  height: 20px; /* réduit légèrement de 24px à 20px */
+  margin-bottom: 2px; /* réduit de 4px à 2px */
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.2s;
+  stroke-width: 2;
+}
+
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 30px;
+  border-radius: 20px;
+}
+
+.nav-btn:active {
+  transform: scale(0.95);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav-btn.active {
+  background: var(--violet);
+}
+
+
+.nav-btn.active .nav-icon {
+  color: var(--white);
+}
+
+.nav-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.nav-btn.active .nav-label {
+  color: var(--white);
+  font-weight: 600;
+}
+
+/* ====================================
+   📄 PAGES
+   ==================================== */
+.container {
+  max-width: 440px;
+  margin: 0 auto;
+  padding: 24px;
+  padding-bottom: 20px;
+}
+
+.nav-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 40px;
+  padding-top: 20px;
+}
+
+.btn-back {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-200);
+  background: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 24px;
+  transition: all 0.2s;
+}
+
+.btn-back:active {
+  transform: scale(0.95);
+  background: var(--gray-50);
+}
+
+.nav-title {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.form-wrapper {
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 32px 24px;
+  margin-top: 24px;
+}
+
+.form-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 32px;
+  letter-spacing: -0.5px;
+}
+
+.items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.item {
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.item-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: var(--black);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 15px;
+  flex-shrink: 0;
+}
+
+.item-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: var(--gray-100);
+  flex-shrink: 0;
+  border: 2px solid var(--gray-200);
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.item-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+.item-value-small {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-700);
+}
+
+.item-badges {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.badge-total {
+  background: var(--gray-100);
+  color: var(--gray-600);
+}
+
+.badge-available {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.btn-remove {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: var(--red);
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.btn-remove:active {
+  transform: scale(0.9);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btn-action {
+  padding: 16px;
+  border-radius: 12px;
+  border: none;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action:active {
+  transform: scale(0.98);
+}
+
+.btn-save {
+  background: var(--black);
+  color: var(--white);
+}
+
+.btn-clear {
+  background: var(--white);
+  color: var(--black);
+  border: 2px solid var(--gray-200);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+}
+
+.empty {
+  text-align: center;
+  padding: 60px 24px;
+}
+
+.empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.empty-text {
+  font-size: 16px;
+  color: var(--gray-500);
+}
+
+/* ====================================
+   🔄 LOADER
+   ==================================== */
+.loader-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.loader-card {
+  background: var(--white);
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  min-width: 200px;
+}
+
+.loader-spinner {
+  width: 50px;
+  height: 50px;
+  margin: 0 auto 20px;
+  border: 4px solid var(--gray-200);
+  border-top-color: var(--violet);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loader-text {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+/* ====================================
+   📦 SCANNER & TOP BAR
+   ==================================== */
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.status-badge.logout {
+  background: var(--red-light);
+  color: var(--red);
+  border: 2px solid var(--red);
+}
+
+.status-badge.login {
+  background: var(--green-light);
+  color: var(--green);
+  border: 2px solid var(--green);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: currentColor;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.btn-home {
+  padding: 10px 20px;
+  border-radius: 24px;
+  border: 2px solid var(--black);
+  background: var(--white);
+  color: var(--black);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.btn-home:active {
+  transform: scale(0.95);
+  background: var(--black);
+  color: var(--white);
+}
+
+.scanner-box {
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+#checkout-qr-reader, #checkin-qr-reader {
+  width: 100%;
+  max-width: 100%;
+  height: 300px;
+  margin: 0 auto 20px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--gray-50);
+}
+
+#checkout-qr-reader video, #checkin-qr-reader video, #selection-qr-reader video {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}
+
+.scan-info {
+  text-align: center;
+}
+
+.scan-text {
+  font-size: 15px;
+  color: var(--gray-600);
+  margin-bottom: 8px;
+}
+
+.scan-count {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--black);
+}
+
+/* ====================================
+   📋 CHECK IN - NAMES LIST
+   ==================================== */
+.names-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.name-card {
+  background: var(--white);
+  border: 2px solid var(--gray-200);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.name-card:active {
+  transform: scale(0.98);
+  border-color: var(--violet);
+  background: var(--violet-light);
+}
+
+.name-card-info {
+  flex: 1;
+}
+
+.name-card-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+
+.name-card-count {
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.name-card-arrow {
+  font-size: 24px;
+  color: var(--gray-400);
+}
+
+/* ====================================
+   📦 CHECK IN - 2 LISTS LAYOUT
+   ==================================== */
+.checkin-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.checkin-section {
+  flex: 1;
+}
+
+.checkin-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: var(--black);
+}
+
+.hidden {
+  display: none !important;
+}
+/* --------------------------------- */
+/* selection block */
+/* --------------------------------- */
+
+/* Conteneur général */
+.snumber-container {
+  margin-bottom: 16px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* Groupe label + input */
+.snumber-group {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label */
+.snumber-label {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 6px;
+}
+
+/* Wrapper input + bouton */
+.snumber-input-wrapper {
+  display: flex;
+  gap: 8px;
+}
+
+/* Input */
+.snumber-input {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.snumber-input:focus {
+  border-color: #4a90e2;
+}
+
+/* Bouton */
+.snumber-btn {
+  padding: 10px 16px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.snumber-btn:hover {
+  background-color: #357ABD;
+}
+/* btn */
+
+.btn-large {
+  width: 100%;
+  padding: 20px;
+  border-radius: 16px;
+  border: none;
+  background: var(--black);
+  color: var(--white);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.btn-large:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+.btn-selection {
+  margin-top: 16px;
+  background: #000000;
+}
+
+
+.btn-secondary {
+  width: 100%;
+  padding: 16px;
+  margin-top: 12px;
+  border-radius: 16px;
+  border: 2px solid var(--gray-300);
+  background: var(--white);
+  color: var(--black);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+
+.btn-secondary:active {
+  transform: scale(0.98);
+  background: var(--gray-100);
+}
+
+/* pdf */
+
+.pdf-wrapper {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.pdf-icon {
+  font-size: 96px;
+  margin-bottom: 24px;
+}
+
+.pdf-title {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.pdf-count {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--blue);
+  margin: 20px 0;
+}
+
+.pdf-message {
+  font-size: 16px;
+  color: var(--gray-600);
+  margin-bottom: 40px;
+}
+/* __________________________ */
+/* pitch                      */
+/* __________________________ */
+
+/* Container principal du pitch-screen */
+#pitch-screen .container {
+  display: flex;
+  max-width: 800px;
+  width: 100%;
+  flex-direction: column;
+  height: calc(100vh - 60px - 60px); /* header + bottom nav (60px chacun approximatif) */
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+/* Wrapper du tableau pour occuper tout l'espace restant */
+#pitch-screen .table-wrapper {
+  flex: 1;                /* prend tout l'espace vertical restant */
+  display: flex;
+  flex-direction: column;
+  overflow: auto;          /* scroll vertical et horizontal si nécessaire */
+  background: white;
+  border: 2px solid var(--gray-200);
+  border-radius: 20px;
+  padding: 16px;
+}
+
+/* Tableau responsive */
+#pitch-screen table {
+  width: 100%;             /* occupe toute la largeur du wrapper */
+  min-width: 800px;        /* largeur minimale pour lisibilité */
+  border-collapse: collapse;
+  table-layout: auto;
+}
+/* Header du tableau */
+#pitch-screen th {
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--gray-600);
+  text-align: left;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+/* Cellules du tableau */
+#pitch-screen td {
+  padding: 12px;
+  font-size: 14px;
+  color: var(--gray-800);
+  border-bottom: 1px solid var(--gray-200);
+}
+/* Sticky pour la première ligne du thead (titres) */
+#pitch-screen table thead tr:first-child th {
+  position: sticky;
+  top: 0;                 /* collé en haut du wrapper */
+  background: white;
+  z-index: 3;             /* au-dessus de la ligne des filtres et des cellules */
+  border-bottom: 2px solid var(--gray-200);
+}
+/* Première ligne du thead (titres) */
+#pitch-screen table thead tr:first-child th {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 3;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+/* Ligne des filtres (ajoutée dynamiquement) */
+#pitch-screen table thead tr.filters-row th {
+  position: sticky;
+  top: 40px; /* hauteur approximative de la première ligne des titres, ajuste si nécessaire */
+  background: #f9f9f9;
+  z-index: 2;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+/* Input/select des filtres */
+#pitch-screen table thead tr.filters-row input,
+#pitch-screen table thead tr.filters-row select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 4px 8px;
+}
+
+/* Scroll horizontal si l'écran est trop petit */
+#pitch-screen .table-wrapper {
+  overflow-x: auto;
+}
+
+
+</style>
+</head>
+
+<body>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     LOGIN SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="login-screen" class="screen login-screen active">
+  <div class="login-card">
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+      </svg>
+    </div>
+    <h1 class="login-title">QR Inventory</h1>
+    <p class="login-subtitle">Sign in to continue</p>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-input" id="loginUsername" placeholder="Enter username" required>
+      </div>
+      
+      <div class="form-group">
+  <label class="form-label">Password</label>
+  <div style="position: relative;">
+    <input type="password" class="form-input" id="loginPassword" placeholder="Enter password" required>
+    <button type="button" id="togglePassword" style="
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+    ">
+      👁️
+    </button>
+  </div>
+</div>
+
+      
+      <button type="submit" class="btn-login">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     HOME SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="home-screen" class="screen home-screen">
+  <div class="home-header">
+    <div class="header-top">
+      <button class="menu-burger" onclick="toggleSidebar()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <div class="user-avatar" id="userAvatar">TC</div>
+    </div>
+    <div class="welcome-text">Welcome Back!</div>
+  </div>
+
+  <div class="home-content">
+    <div class="actions-grid">
+      <div class="action-card selection" onclick="goToSelection()">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <div class="action-title">Selection</div>
+      </div>
+
+      <div class="action-card checkin" onclick="goToCheckIn()">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
+        <div class="action-title">Check In</div>
+      </div>
+
+      <div class="action-card checkout" onclick="goToCheckOut()">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="7 11 12 6 17 11"/>
+            <path d="M12 18V6"/>
+            <path d="M3 22h18"/>
+          </svg>
+        </div>
+        <div class="action-title">Check Out</div>
+      </div>
+
+      <div class="action-card pitch" onclick="goToPitchScreen()">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div class="action-title">Pitch Submitted</div>
+      </div>
+
+      <div class="action-card details" onclick="goToDetails()">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="16" x2="12" y2="12"/>
+            <line x1="12" y1="8" x2="12.01" y2="8"/>
+          </svg>
+        </div>
+        <div class="action-title">Details</div>
+      </div>
+
+      <div class="action-card qc" onclick="goToDashboard()">
+        <div class="action-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <div class="action-title">Dashboard</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SIDEBAR
+     ═══════════════════════════════════════════════════════════════ -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-user">
+      <div class="sidebar-avatar" id="sidebarAvatar">TC</div>
+      <div class="sidebar-user-info">
+        <h3 id="sidebarName">Tropic</h3>
+        <p id="sidebarEmail">demo@example.com</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-menu">
+    <div class="sidebar-item danger" onclick="logout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+        <polyline points="16 17 21 12 16 7"/>
+        <line x1="21" y1="12" x2="9" y2="12"/>
+      </svg>
+      <span>Log Out</span>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════════════════════════════
+     NOUVEAU CHECK IN - SCAN SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="checkin-scan-screen" class="screen">
+  <div class="container">
+    <div class="top-bar">
+      <div class="status-badge login">
+        <span class="status-dot"></span>
+        <span>Check In</span>
+      </div>
+      <button class="btn-home" onclick="goHome()">Home</button>
+    </div>
+    
+    <!-- SCANNER -->
+    <div class="scanner-box">
+      <div id="checkin-qr-reader"></div>
+      <div class="scan-info">
+        <p class="scan-text">Scan QR or search S-Number</p>
+      </div>
+    </div>
+    
+    <!-- SEARCH S-NUMBER -->
+    <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 20px; padding: 20px; margin-bottom: 24px;">
+      <div style="display: flex; gap: 12px;">
+        <input 
+          type="text" 
+          id="checkin-search-input" 
+          class="form-input" 
+          placeholder="Enter S-Number" 
+          style="flex: 1; margin: 0;"
+        >
+        <button 
+          class="btn-submit" 
+          onclick="searchCheckinItem()" 
+          style="width: auto; padding: 14px 24px; margin: 0; background: var(--green);">
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHECK IN - NAMES LIST SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="checkin-names-screen" class="screen">
+  <div class="container">
+    <div class="nav-header">
+      <button class="btn-back" onclick="goBackToCheckinScan()">←</button>
+      <div class="nav-title">Select Name</div>
+    </div>
+    
+    <div class="section-header">
+      <div class="section-title">Check Out Names</div>
+    </div>
+    
+    <div id="checkin-names-list" class="names-list">
+      <div class="empty">
+        <div class="empty-icon">👤</div>
+        <p class="empty-text">No names available</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHECK IN - 2 LISTS SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="checkin-items-screen" class="screen">
+  <div class="container">
+    <div class="nav-header">
+      <button class="btn-back" onclick="goBackToNames()">←</button>
+      <div class="nav-title" id="checkin-selected-name">Check In</div>
+    </div>
+    
+    <!-- CHECKED OUT ITEMS -->
+    <div class="section-header">
+      <div class="section-title">Checked Out Items</div>
+    </div>
+    <div id="checkedout-items-list" class="items-list">
+      <div class="empty">
+        <div class="empty-icon">📦</div>
+        <p class="empty-text">No items</p>
+      </div>
+    </div>
+    
+    <!-- TO CHECK IN ITEMS -->
+    <div class="section-header" style="margin-top: 32px;">
+      <div class="section-title">To Check In</div>
+    </div>
+    <div id="tocheckin-items-list" class="items-list">
+      <div class="empty">
+        <div class="empty-icon">✅</div>
+        <p class="empty-text">No items selected</p>
+      </div>
+    </div>
+    
+    <!-- ACTIONS -->
+    <div class="actions" style="margin-top: 24px;">
+      <button class="btn-action btn-save" onclick="saveCheckinAll()">Save All</button>
+      <button class="btn-action btn-clear" onclick="clearCheckinAll()">Clear</button>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════════════════════════════
+     CHECK OUT FORM SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="checkout-form-screen" class="screen">
+  <div class="container">
+    <div class="nav-header">
+      <button class="btn-back" onclick="goHome()">←</button>
+      <div class="nav-title">Check Out</div>
+    </div>
+    <div class="form-wrapper">
+      <h2 class="form-title">User Information</h2>
+      
+      <div class="form-group">
+        <label class="form-label">Type</label>
+        <select id="checkout-type" class="form-select">
+          <option value="">Select type...</option>
+          <option value="Internal">Internal</option>
+          <option value="External">External</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" id="checkout-name" class="form-input" placeholder="Enter name">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Destination</label>
+        <input type="text" id="checkout-destination" class="form-input" placeholder="Enter destination">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">Remarks</label>
+        <input type="text" id="checkout-remarks" class="form-input" placeholder="Remarks (optional)">
+      </div>
+      
+      <div style="text-align: right; font-size: 14px; color: var(--gray-600); margin-top: 16px;">
+        <span id="checkout-date-display"></span>
+      </div>
+      
+      <button class="btn-submit" onclick="advanceToCheckoutScan()">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     CHECK OUT SCAN SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="checkout-scan-screen" class="screen">
+  <div class="container">
+    <div class="top-bar">
+      <div class="status-badge logout">
+        <span class="status-dot"></span>
+        <span>Check Out</span>
+      </div>
+      <button class="btn-home" onclick="goHome()">Home</button>
+    </div>
+    
+    <div class="scanner-box">
+      <div id="checkout-qr-reader"></div>
+      <div class="scan-info">
+        <p class="scan-text">Scan QR or search S-Number</p>
+        <p class="scan-count">Scanned: <span id="checkout-count">0</span></p>
+      </div>
+    </div>
+    
+    <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 20px; padding: 20px; margin-bottom: 24px;">
+      <div style="display: flex; gap: 12px;">
+        <input 
+          type="text" 
+          id="checkout-search-input" 
+          class="form-input" 
+          placeholder="Enter S-Number" 
+          style="flex: 1; margin: 0;"
+        >
+        <button 
+          class="btn-submit" 
+          onclick="searchCheckoutItem()" 
+          style="width: auto; padding: 14px 24px; margin: 0; background: var(--violet);">
+          Search
+        </button>
+      </div>
+    </div>
+    
+    <div class="section-header">
+      <div class="section-title">Scanned Items</div>
+    </div>
+    <div id="checkout-items-list" class="items-list">
+      <div class="empty">
+        <div class="empty-icon">📦</div>
+        <p class="empty-text">No items scanned yet</p>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn-action btn-save" onclick="saveCheckoutAll()">Save All</button>
+      <button class="btn-action btn-clear" onclick="clearCheckoutAll()">Clear</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     SELECTION FORM SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="selection-form-screen" class="screen">
+  <div class="container">
+    <div class="nav-header">
+      <button class="btn-back" onclick="goHome()">←</button>
+      <div class="nav-title">Selection</div>
+      <div class="form-group1">
+        <input type="text" id="selection-date-input" class="form-input1" disabled>
+      </div>
+    </div>
+    <div class="form-wrapper">
+      <h2 class="form-title">Customer Information</h2>
+      <div class="form-group">
+        <label class="form-label">Customer Name</label>
+        <input type="text" id="customer-input" class="form-input" placeholder="Enter customer name">
+      </div>
+      
+      <button class="btn-submit" onclick="advanceToSelectionScan()">Continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- selection scanner -->
+<div id="selection-scan-screen" class="screen">
+  <div class="container">
+    <div class="top-bar">
+      <div class="status-badge" style="background: var(--blue-light); color: var(--blue); border-color: var(--blue);">
+        <span class="status-dot"></span>
+        <span>Scanning</span>
+      </div>
+      <button class="btn-home" onclick="goBackToSelectionForm()">Back</button>
+    </div>
+ 
+    <div class="scan-wrapper" style=" background: var(--white);border: 2px solid var(--gray-200);border-radius: 20px;padding: 24px;margin-bottom: 24px; position: relative;">
+      <div class="selection-count-badge" id="selection-count" style=" position: absolute;top: 16px;right: 16px;background:var(--black);color:var(--white);padding:8px 16px;border-radius:20px;font-weight:700;z-index:10;">0</div>
+      <div id="selection-qr-reader" style="  width: 100%;max-width: 100%;height: 300px;margin: 0 auto 20px;border-radius: 16px;overflow: hidden;background: var(--gray-50)"></div>
+    </div>
+    <!-- search by Snumber -->
+        
+<div class="snumber-container">
+  <div class="snumber-group">
+    <label class="snumber-label">Enter S-Number</label>
+    <div class="snumber-input-wrapper">
+      <input type="text" id="manual-snumber-input" class="snumber-input" placeholder="Ex: S12345">
+      <button class="snumber-btn" onclick="searchBySNumber()">Search</button>
+    </div>
+  </div>
+</div>
+     <!--  -->
+    <div class="items-list" id="selection-items-list">
+      <div class="empty">
+        <div class="empty-icon">📦</div>
+        <p class="empty-text">No items scanned yet</p>
+      </div>
+    </div>
+    <div class="action-buttons" style="display:grid;gap:12px;margin-top:24px;">
+      <button class="btn-large" onclick="generateSelectionPDF()">
+        <span>📄 Generate PDF & Save</span>
+      </button>
+      <button class="btn-secondary" onclick="clearSelectionItems()">
+        <span>Clear All</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="selection-pdf-screen" class="screen">
+  <div class="container">
+    <div class="pdf-wrapper">
+      <div class="pdf-icon">📄</div>
+      <h2 class="pdf-title">PDF Created!</h2>
+      <div class="pdf-count" id="pdf-item-count">0</div>
+      <p class="pdf-message">items processed with images</p>
+      <button class="btn-large" onclick="openSelectionPDF()">
+        <span>👁️ Open PDF</span>
+      </button>
+      <button class="btn-large btn-selection" onclick="goBackToHomeFromPDF()" style="margin-top: 16px; background: var(--gray-700);">
+        Back to Home
+      </button>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════════════════════════════
+     NOUVEAU DETAILS - REMPLACE L'ANCIEN DETAILS SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+
+<!-- DETAILS SCAN SCREEN -->
+<div id="details-scan-screen" class="screen">
+  <div class="container">
+    <div class="top-bar">
+      <div class="status-badge" style="background: var(--violet-light); color: var(--violet); border: 2px solid var(--violet);">
+        <span class="status-dot"></span>
+        <span>Details</span>
+      </div>
+      <button class="btn-home" onclick="goHome()">Home</button>
+    </div>
+    
+    <!-- SCANNER -->
+    <div class="scanner-box">
+      <div id="details-qr-reader"></div>
+      <div class="scan-info">
+        <p class="scan-text">Scan QR or search S-Number</p>
+      </div>
+    </div>
+    
+    <!-- SEARCH S-NUMBER -->
+    <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 20px; padding: 20px; margin-bottom: 24px;">
+      <div style="display: flex; gap: 12px;">
+        <input 
+          type="text" 
+          id="details-search-input" 
+          class="form-input" 
+          placeholder="Enter S-Number" 
+          style="flex: 1; margin: 0;"
+        >
+        <button 
+          class="btn-submit" 
+          onclick="searchDetailsItem()" 
+          style="width: auto; padding: 14px 24px; margin: 0; background: var(--violet);">
+          Search
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DETAILS VIEW SCREEN -->
+<div id="details-view-screen" class="screen">
+  <div class="container">
+    <div class="nav-header">
+      <button class="btn-back" onclick="goBackToDetailsScan()">←</button>
+      <div class="nav-title" id="details-reference">Details</div>
+    </div>
+    
+    <!-- IMAGE -->
+    <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+      <img id="details-image" src="" alt="Product" style="width: 100%; height: auto; border-radius: 16px; display: none;">
+      <div id="details-no-image" style="display: none; text-align: center; padding: 60px 20px; background: var(--gray-100); border-radius: 16px;">
+        <div style="font-size: 48px; margin-bottom: 12px; opacity: 0.3;">🖼️</div>
+        <p style="color: var(--gray-500);">No image available</p>
+      </div>
+    </div>
+    
+    <!-- INFO TABLE -->
+    <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tbody id="details-table-body">
+          <!-- Sera rempli dynamiquement -->
+        </tbody>
+      </table>
+    </div>
+    
+    <!-- ARCHIVING HISTORY -->
+    <div class="section-header">
+      <div class="section-title">History</div>
+    </div>
+    <div id="details-history-list" class="items-list">
+      <div class="empty">
+        <div class="empty-icon">📋</div>
+        <p class="empty-text">No history</p>
+      </div>
+    </div>
+
+     <!-- SELECTION -->
+    <div class="section-header" style="margin-top: 24px;">
+      <div class="section-title">Selection</div>
+    </div>
+
+    <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 20px; padding: 24px; margin-bottom: 24px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 2px solid var(--gray-200); text-align: left;">
+            <th style="padding: 12px 8px;">Date</th>
+            <th style="padding: 12px 8px;">Client</th>
+            <th style="padding: 12px 8px;">RequestBy</th>
+          </tr>
+        </thead>
+        <tbody id="details-selection-table-body">
+          <tr>
+            <td colspan="3" style="text-align: center; padding: 20px; color: var(--gray-500);">
+              No selection data
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<!-- ═══════════════════════════════════════════════════════════════
+     PITCH SUBMITTED SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+     <div id="pitch-screen" class="screen">
+  <div class="container">
+    <div class="nav-header">
+      <button class="btn-back" onclick="goHome()">←</button>
+      <div class="nav-title">Pitch Submitted</div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Ref No</th>
+            <th>Customer</th>
+            <th>Date</th>
+            <th>Submitted By</th> <!-- Nouvelle colonne insérée ici -->
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="pitch-tbody">
+          <tr>
+            <td colspan="5" style="text-align:center; padding:40px; color: var(--gray-500);">
+              No data available
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════
+     Dashbaord SCREEN
+     ═══════════════════════════════════════════════════════════════ -->
+<div id="dashboard-screen" class="screen">
+  <div class="container">
+    <div class="nav-header">
+      <button class="btn-back" onclick="goHome()">←</button>
+      <div class="nav-title">Dashboard</div>
+    </div>
+    <div class="empty">
+      <div class="empty-icon">✓</div>
+      <p class="empty-text">Dashboard coming soon</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     BOTTOM NAV
+     ═══════════════════════════════════════════════════════════════ -->
+<nav class="bottom-nav hidden" id="bottomNav">
+  <button class="nav-btn" id="nav-back" onclick="handleBackNav()">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M19 12H5M12 19l-7-7 7-7"/>
+    </svg>
+    <span class="nav-label">Back</span>
+  </button>
+  <button class="nav-btn" id="nav-selection" onclick="handleSelectionNav()">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+      <polyline points="14 2 14 8 20 8"/>
+    </svg>
+    <span class="nav-label">Selection</span>
+  </button>
+  <button class="nav-btn active" id="nav-home" onclick="handleHomeNav()">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+    <span class="nav-label">Home</span>
+  </button>
+  <button class="nav-btn" id="nav-checkin" onclick="handleCheckInNav()">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <polyline points="9 11 12 14 22 4"/>
+      <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+    </svg>
+    <span class="nav-label">Check In</span>
+  </button>
+  <button class="nav-btn" id="nav-checkout" onclick="handleCheckOutNav()">
+    <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <polyline points="7 11 12 6 17 11"/>
+      <path d="M12 18V6M3 22h18"/>
+    </svg>
+    <span class="nav-label">Check Out</span>
+  </button>
+</nav>
+
+
+<script>
+
+
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyTT7cf3VZXeymJGQhBPiK8vhfLYENLbjxBPi0S6KN1lAVakR5Ps2ocX6EY_Pe5S5fvaA/exec';
+
+const API_URL = 'https://script.google.com/macros/s/AKfycbyTT7cf3VZXeymJGQhBPiK8vhfLYENLbjxBPi0S6KN1lAVakR5Ps2ocX6EY_Pe5S5fvaA/exec';
+const ARCHIVING_SPREADSHEET_ID = '1jBJdi1E142iMLwe8_59O8c4Dq_ua48AWcrukf9dYxwc';
+
+let currentUser = null;
+let scanCooldown = false;
+
+// CHECK OUT VARIABLES
+let checkoutScanner;
+let isCheckoutScanning = false;
+let checkoutItems = [];
+let checkoutFormData = {};
+
+// CHECK IN VARIABLES
+let checkinScanner;
+let isCheckinScanning = false;
+let currentScannedReference = '';
+let checkinNamesData = {};
+let currentCheckinName = '';
+let checkedOutItems = [];
+let toCheckinItems = [];
+
+// selection
+let selectionScanner;
+let isSelectionScanning = false;
+let scannedItems = [];
+let selectionItems = [];
+let selectionFormData = { customer: '', date: '' };
+let selectionPDFUrl = '';
+
+// ✅ DETAILS VARIABLES (AJOUTÉ)
+let detailsScanner;
+let isDetailsScanning = false;
+let currentDetailsData = null;
+
+// Pitch
+let allPitchItems = [];
+// ====================================
+// 🔐 LOGIN
+// ====================================
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const username = document.getElementById('loginUsername').value.trim();
+  const password = document.getElementById('loginPassword').value.trim();
+
+  if (!username || !password) {
+    alert('Please enter username and password');
+    return;
+  }
+
+  showLoader('Logging in...');
+
+  try {
+    const url = `${API_URL}?apiAction=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      redirect: 'follow'
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    const result = await response.json();
+
+    if (!result || typeof result.success === 'undefined') {
+      throw new Error('Invalid API response');
+    }
+
+    if (result.success) {
+    localStorage.setItem('currentUsername', result.user.username);
+      currentUser = result.user || {};
+
+      const initials = getInitials(username);
+
+      const userAvatar = document.getElementById('userAvatar');
+      const sidebarAvatar = document.getElementById('sidebarAvatar');
+      const sidebarName = document.getElementById('sidebarName');
+      const sidebarEmail = document.getElementById('sidebarEmail');
+
+      if (userAvatar) userAvatar.textContent = initials;
+      if (sidebarAvatar) sidebarAvatar.textContent = initials;
+      if (sidebarName) sidebarName.textContent = username;
+      if (sidebarEmail) sidebarEmail.textContent = result.user?.email || '';
+
+      showScreen('home-screen');
+
+    } else {
+      alert(result.message || 'Invalid credentials');
+    }
+
+  } catch (error) {
+    alert('Connection error. Please try again.');
+  } finally {
+    hideLoader();
+  }
+});
+
+const passwordInput = document.getElementById('loginPassword');
+const togglePassword = document.getElementById('togglePassword');
+
+togglePassword.addEventListener('click', () => {
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+
+  togglePassword.textContent = type === 'password' ? '👁️' : '👁️‍🗨️';
+});
+
+
+function getCurrentUsername() {
+  return localStorage.getItem('currentUsername') || 'Unknown';
+}
+
+const username = getCurrentUsername();
+
+function getInitials(name) {
+  const parts = name.split(' ');
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.substring(0, 2).toUpperCase();
+}
+
+function logout() {
+  currentUser = null;
+  showScreen('login-screen');
+  toggleSidebar();
+}
+
+function showScreen(screenId) {
+
+  // 1️⃣ Vérifier que l'écran cible existe
+  const targetScreen = document.getElementById(screenId);
+  if (!targetScreen) {
+    return;
+  }
+
+  // 2️⃣ Désactiver tous les écrans
+  document.querySelectorAll('.screen').forEach(screen => {
+    screen.classList.remove('active');
+  });
+
+  // 3️⃣ Activer l'écran cible
+  targetScreen.classList.add('active');
+
+  // 4️⃣ Gestion bottom navigation
+  const bottomNav = document.getElementById('bottomNav');
+  if (bottomNav) {
+    if (screenId === 'login-screen') {
+      bottomNav.classList.add('hidden');
+    } else {
+      bottomNav.classList.remove('hidden');
+    }
+  }
+
+  // 5️⃣ Mettre à jour navigation active si la fonction existe
+  if (typeof updateActiveNav === 'function') {
+    updateActiveNav(screenId);
+  }
+}
+
+
+function updateActiveNav(screenId) {
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  
+  if (screenId === 'home-screen') {
+    document.getElementById('nav-home').classList.add('active');
+  } else if (screenId.includes('selection')) {
+    document.getElementById('nav-selection').classList.add('active');
+  } else if (screenId.includes('checkin')) {
+    document.getElementById('nav-checkin').classList.add('active');
+  } else if (screenId.includes('checkout')) {
+    document.getElementById('nav-checkout').classList.add('active');
+  }
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('active');
+  document.getElementById('sidebarOverlay').classList.toggle('active');
+}
+
+function goHome() {
+  stopCheckoutScan();
+  stopCheckinScan();
+  stopSelectionScan();
+  stopDetailsScan();
+  showScreen('home-screen');
+}
+
+// ====================================
+// ✅ CHECK IN COMPLET
+// ====================================
+function goToCheckIn() {
+  currentScannedReference = '';
+  checkinNamesData = {};
+  currentCheckinName = '';
+  checkedOutItems = [];
+  toCheckinItems = [];
+  
+  showScreen('checkin-scan-screen');
+  startCheckinScan();
+}
+
+function startCheckinScan() {
+  if (isCheckinScanning) return;
+  if (!checkinScanner) {
+    checkinScanner = new Html5Qrcode("checkin-qr-reader");
+  }
+  checkinScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 220 },
+    decodedText => onCheckinScan(decodedText)
+  ).then(() => {
+    isCheckinScanning = true;
+  }).catch(err => {
+    alert('Camera error');
+  });
+}
+
+function stopCheckinScan() {
+  if (checkinScanner && isCheckinScanning) {
+    checkinScanner.stop().then(() => { 
+      isCheckinScanning = false; 
+    }).catch(() => { 
+      isCheckinScanning = false; 
+    });
+  }
+}
+
+async function onCheckinScan(decodedText) {
+  if (scanCooldown) return;
+  
+  try {
+    const url = new URL(decodedText);
+    const params = new URLSearchParams(url.search);
+    const spreadsheetId = params.get('id');
+    const row = params.get('row');
+    
+    if (spreadsheetId && row) {
+      scanCooldown = true;
+      if (navigator.vibrate) navigator.vibrate(200);
+      await fetchCheckinItemData(spreadsheetId, row);
+      setTimeout(() => { scanCooldown = false; }, 800);
+    } else {
+      alert('Invalid QR code');
+    }
+  } catch (e) {
+    scanCooldown = false;
+    alert('Invalid QR code');
+  }
+}
+
+async function fetchCheckinItemData(spreadsheetId, row) {
+  showLoader('Loading...');
+  
+  try {
+    const url = `${API_URL}?apiAction=getItem&id=${spreadsheetId}&row=${row}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.error) {
+      alert('Error: ' + result.error);
+      return;
+    }
+    
+    if (result.success && result.data) {
+      const reference = result.data.reference;
+      currentScannedReference = reference;
+      await loadCheckinNames(reference);
+    }
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+async function searchCheckinItem() {
+  const sNumber = document.getElementById('checkin-search-input').value.trim();
+  
+  if (!sNumber) {
+    alert('Please enter S-Number');
+    return;
+  }
+  
+  showLoader('Searching...');
+  
+  try {
+    const url = `${API_URL}?apiAction=getItemBySNumber&spreadsheetId=${ARCHIVING_SPREADSHEET_ID}&sNumber=${encodeURIComponent(sNumber)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.error) {
+      alert('S-Number not found');
+      return;
+    }
+    
+    if (result.success && result.data) {
+      const reference = result.data.reference;
+      currentScannedReference = reference;
+      document.getElementById('checkin-search-input').value = '';
+      await loadCheckinNames(reference);
+    }
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+async function loadCheckinNames(reference) {
+  showLoader('Loading names...');
+  
+  try {
+    const url = `${API_URL}?apiAction=getItemsByReference&reference=${encodeURIComponent(reference)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.error) {
+      alert('Error: ' + result.error);
+      return;
+    }
+    
+    if (result.success) {
+      const activeNames = result.names.filter(name => {
+        return result.data[name] && result.data[name].items.length > 0;
+      });
+      
+      if (activeNames.length > 0) {
+        checkinNamesData = result.data;
+        renderCheckinNames(activeNames);
+        stopCheckinScan();
+        showScreen('checkin-names-screen');
+      } else {
+        alert('All items have been checked in for this product');
+        startCheckinScan();
+      }
+    }
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+function renderCheckinNames(names) {
+  const namesList = document.getElementById('checkin-names-list');
+  
+  if (names.length === 0) {
+    namesList.innerHTML = '<div class="empty"><div class="empty-icon">👤</div><p class="empty-text">No names available</p></div>';
+    return;
+  }
+  
+  namesList.innerHTML = names.map(name => {
+    const count = checkinNamesData[name].items.length;
+    return `
+      <div class="name-card" onclick="selectCheckinName('${name}')">
+        <div class="name-card-info">
+          <div class="name-card-name">${name}</div>
+          <div class="name-card-count">${count} item${count > 1 ? 's' : ''}</div>
+        </div>
+        <div class="name-card-arrow">→</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectCheckinName(name) {
+  currentCheckinName = name;
+  checkedOutItems = checkinNamesData[name].items;
+  toCheckinItems = [];
+  
+  document.getElementById('checkin-selected-name').textContent = name;
+  
+  renderCheckinLists();
+  showScreen('checkin-items-screen');
+}
+
+function renderCheckinLists() {
+  const outList = document.getElementById('checkedout-items-list');
+  const inList = document.getElementById('tocheckin-items-list');
+  
+  if (checkedOutItems.length === 0) {
+    outList.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><p class="empty-text">No items</p></div>';
+  } else {
+    outList.innerHTML = checkedOutItems.map((item, index) => {
+      const imageHtml = item.imageUrl 
+        ? `<img src="${item.imageUrl}" alt="${item.reference}" class="item-image" onerror="this.style.display='none'">`
+        : '<div class="item-image" style="background: var(--gray-200);"></div>';
+      
+      return `
+        <div class="item">
+          <div class="item-number">${index + 1}</div>
+          ${imageHtml}
+          <div class="item-info">
+            <div style="margin-bottom: 8px;">
+              <div class="item-label">Reference</div>
+              <div class="item-value">${item.reference}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <div class="item-label">S-Number</div>
+              <div class="item-value-small">${item.sNumber}</div>
+            </div>
+            <div class="item-badges">
+              <span class="badge badge-total">Total: ${item.totalQty}</span>
+              <span class="badge badge-available">Avail: ${item.qtyAvailable}</span>
+            </div>
+          </div>
+          <button class="btn-remove" onclick="moveToCheckin(${index})" style="background: var(--green);">→</button>
+        </div>
+      `;
+    }).join('');
+  }
+  
+  if (toCheckinItems.length === 0) {
+    inList.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p class="empty-text">No items selected</p></div>';
+  } else {
+    inList.innerHTML = toCheckinItems.map((item, index) => {
+      const imageHtml = item.imageUrl 
+        ? `<img src="${item.imageUrl}" alt="${item.reference}" class="item-image" onerror="this.style.display='none'">`
+        : '<div class="item-image" style="background: var(--gray-200);"></div>';
+      
+      return `
+        <div class="item">
+          <div class="item-number">${index + 1}</div>
+          ${imageHtml}
+          <div class="item-info">
+            <div style="margin-bottom: 8px;">
+              <div class="item-label">Reference</div>
+              <div class="item-value">${item.reference}</div>
+            </div>
+            <div style="margin-bottom: 10px;">
+              <div class="item-label">S-Number</div>
+              <div class="item-value-small">${item.sNumber}</div>
+            </div>
+            <div class="item-badges">
+              <span class="badge badge-total">Total: ${item.totalQty}</span>
+              <span class="badge badge-available">Avail: ${Number(item.qtyAvailable) + 1}</span>
+            </div>
+          </div>
+          <button class="btn-remove" onclick="moveBackToCheckedOut(${index})">←</button>
+        </div>
+      `;
+    }).join('');
+  }
+}
+
+function moveToCheckin(index) {
+  const item = checkedOutItems[index];
+  checkedOutItems.splice(index, 1);
+  toCheckinItems.push(item);
+  renderCheckinLists();
+}
+
+function moveBackToCheckedOut(index) {
+  const item = toCheckinItems[index];
+  toCheckinItems.splice(index, 1);
+  checkedOutItems.push(item);
+  renderCheckinLists();
+}
+
+function clearCheckinAll() {
+  if (toCheckinItems.length === 0) return;
+  if (!confirm('Clear all items?')) return;
+  
+  checkedOutItems = [...checkedOutItems, ...toCheckinItems];
+  toCheckinItems = [];
+  renderCheckinLists();
+}
+
+async function saveCheckinAll() {
+  if (toCheckinItems.length === 0) {
+    alert('No items to check in');
+    return;
+  }
+  
+  showLoader('Saving...');
+  
+  try {
+    let finalSessionId = '';
+    
+    for (let i = 0; i < toCheckinItems.length; i++) {
+      const item = toCheckinItems[i];
+      
+      // ✅ NE PAS ENVOYER loginName, l'Apps Script va le récupérer automatiquement
+      const params = new URLSearchParams({
+        apiAction: 'saveCheckinWithID',
+        archivingRow: String(item.archivingRow || ''),
+        loginName: '',  // ✅ VIDE ! Apps Script va garder le nom du Check Out
+        date: new Date().toLocaleDateString('en-GB'),
+        spreadsheetId: item.spreadsheetId || '',
+        sourceRow: String(item.sourceRow || ''),
+        sessionId: finalSessionId
+      });
+
+      const url = `${API_URL}?${params.toString()}`;
+      const response = await fetch(url);
+      const result = await response.json();
+      
+      if (i === 0 && result.sessionId) {
+        finalSessionId = result.sessionId;
+      }
+    }
+    
+    hideLoader();
+    alert(`Success! ${toCheckinItems.length} items checked in with ID: ${finalSessionId}`);
+    
+    toCheckinItems = [];
+    goHome();
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+function goBackToCheckinScan() {
+  showScreen('checkin-scan-screen');
+  startCheckinScan();
+}
+
+function goBackToNames() {
+  renderCheckinNames(Object.keys(checkinNamesData));
+  showScreen('checkin-names-screen');
+}
+
+// ====================================
+// 📤 CHECK OUT
+// ====================================
+function goToCheckOut() {
+  const today = new Date().toLocaleDateString('en-GB');
+  document.getElementById('checkout-date-display').textContent = today;
+  document.getElementById('checkout-type').value = '';
+  document.getElementById('checkout-name').value = '';
+  document.getElementById('checkout-destination').value = '';
+  document.getElementById('checkout-remarks').value = '';
+  showScreen('checkout-form-screen');
+}
+
+function advanceToCheckoutScan() {
+  const type = document.getElementById('checkout-type').value;
+  const name = document.getElementById('checkout-name').value.trim();
+  const destination = document.getElementById('checkout-destination').value.trim();
+  const remarks = document.getElementById('checkout-remarks').value.trim();
+  const date = new Date().toLocaleDateString('en-GB');
+  
+  if (!type) {
+    alert('Please select type');
+    return;
+  }
+  
+  if (!name) {
+    alert('Please enter name');
+    return;
+  }
+  
+  if (!destination) {
+    alert('Please enter destination');
+    return;
+  }
+  
+  checkoutFormData = { type, name, destination, remarks, date };
+  checkoutItems = [];
+  
+  showScreen('checkout-scan-screen');
+  
+  startCheckoutScan();
+  updateCheckoutList();
+}
+
+function startCheckoutScan() {
+  if (isCheckoutScanning) return;
+  if (!checkoutScanner) {
+    checkoutScanner = new Html5Qrcode("checkout-qr-reader");
+  }
+  checkoutScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 220 },
+    decodedText => onCheckoutScan(decodedText)
+  ).then(() => {
+    isCheckoutScanning = true;
+  }).catch(err => {
+    alert('Camera error');
+  });
+}
+
+function stopCheckoutScan() {
+  if (checkoutScanner && isCheckoutScanning) {
+    checkoutScanner.stop().then(() => { 
+      isCheckoutScanning = false; 
+    }).catch(() => { 
+      isCheckoutScanning = false; 
+    });
+  }
+}
+
+async function onCheckoutScan(decodedText) {
+  if (scanCooldown) return;
+  
+  try {
+    const url = new URL(decodedText);
+    const params = new URLSearchParams(url.search);
+    const spreadsheetId = params.get('id');
+    const row = params.get('row');
+    
+    if (spreadsheetId && row) {
+      scanCooldown = true;
+      if (navigator.vibrate) navigator.vibrate(200);
+      await fetchCheckoutItem(spreadsheetId, row);
+      setTimeout(() => { scanCooldown = false; }, 800);
+    } else {
+      alert('Invalid QR code');
+    }
+  } catch (e) {
+    scanCooldown = false;
+    alert('Invalid QR code');
+  }
+}
+
+async function fetchCheckoutItem(spreadsheetId, row) {
+  showLoader('Loading...');
+  
+  try {
+    const url = `${API_URL}?apiAction=getItem&id=${spreadsheetId}&row=${row}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.error) {
+      alert('Error: ' + result.error);
+      return;
+    }
+    
+    if (result.success && result.data) {
+      addCheckoutItem(result.data);
+    }
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+async function searchCheckoutItem() {
+  const sNumber = document.getElementById('checkout-search-input').value.trim();
+  
+  if (!sNumber) {
+    alert('Please enter S-Number');
+    return;
+  }
+  
+  showLoader('Searching...');
+  
+  try {
+    const url = `${API_URL}?apiAction=getItemBySNumber&spreadsheetId=${ARCHIVING_SPREADSHEET_ID}&sNumber=${encodeURIComponent(sNumber)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.error) {
+      alert('S-Number not found');
+      return;
+    }
+    
+    if (result.success && result.data) {
+      addCheckoutItem(result.data);
+      document.getElementById('checkout-search-input').value = '';
+    }
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+function addCheckoutItem(data) {
+  const item = {
+    id: Date.now(),
+    reference: data.reference || 'N/A',
+    sNumber: data.sNumber || 'N/A',
+    season: data.season || 'N/A',
+    description: data.description || 'N/A',
+    fabricCode: data.fabricCode || 'N/A',
+    composition: data.composition || 'N/A',
+    collection: data.collection || 'N/A',
+    filename: data.filename || '',
+    imageUrl: data.imageUrl || '',
+    totalQty: Number(data.totalQty) || 0,
+    qtyAvailable: Number(data.qtyAvailable) || 0,
+    sourceRow: data.sourceRow,
+    spreadsheetId: data.spreadsheetId
+  };
+  
+  if (item.qtyAvailable <= 0) {
+    alert('No quantity available');
+    return;
+  }
+  
+  checkoutItems.push(item);
+  updateCheckoutList();
+}
+
+function updateCheckoutList() {
+  const itemsList = document.getElementById('checkout-items-list');
+  document.getElementById('checkout-count').textContent = checkoutItems.length;
+  
+  if (checkoutItems.length === 0) {
+    itemsList.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><p class="empty-text">No items scanned yet</p></div>';
+    return;
+  }
+  
+  itemsList.innerHTML = checkoutItems.map((item, index) => {
+    const imageHtml = item.imageUrl 
+      ? `<img src="${item.imageUrl}" alt="${item.reference}" class="item-image" onerror="this.style.display='none'">`
+      : '<div class="item-image" style="background: var(--gray-200);"></div>';
+    
+    return `
+      <div class="item">
+        <div class="item-number">${index + 1}</div>
+        ${imageHtml}
+        <div class="item-info">
+          <div style="margin-bottom: 8px;">
+            <div class="item-label">Reference</div>
+            <div class="item-value">${item.reference}</div>
+          </div>
+          <div style="margin-bottom: 10px;">
+            <div class="item-label">S-Number</div>
+            <div class="item-value-small">${item.sNumber}</div>
+          </div>
+          <div class="item-badges">
+            <span class="badge badge-total">Total: ${item.totalQty}</span>
+            <span class="badge badge-available">Avail: ${item.qtyAvailable - 1}</span>
+          </div>
+        </div>
+        <button class="btn-remove" onclick="removeCheckoutItem(${item.id})">×</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function removeCheckoutItem(itemId) {
+  checkoutItems = checkoutItems.filter(item => item.id !== itemId);
+  updateCheckoutList();
+}
+
+function clearCheckoutAll() {
+  if (checkoutItems.length === 0) return;
+  if (!confirm('Clear all items?')) return;
+  
+  checkoutItems = [];
+  updateCheckoutList();
+}
+
+async function saveCheckoutAll() {
+  if (checkoutItems.length === 0) {
+    alert('No items to save');
+    return;
+  }
+  
+  showLoader('Saving...');
+  
+  try {
+    let finalSessionId = '';
+    
+    for (let i = 0; i < checkoutItems.length; i++) {
+      const item = checkoutItems[i];
+      
+      const params = new URLSearchParams({
+        apiAction: 'saveItemWithID',
+        reference: item.reference || '',
+        sNumber: item.sNumber || '',
+        season: item.season || '',
+        description: item.description || '',
+        fabricCode: item.fabricCode || '',
+        composition: item.composition || '',
+        collection: item.collection || '',
+        filename: item.filename || '',
+        totalQty: String(item.totalQty || ''),
+        sourceRow: String(item.sourceRow || ''),
+        spreadsheetId: item.spreadsheetId || '',
+        type: checkoutFormData.type,
+        name: checkoutFormData.name,
+        date: checkoutFormData.date,
+        destination: checkoutFormData.destination || '',
+        remarks: checkoutFormData.remarks || '',
+        sessionId: finalSessionId
+      });
+
+      const url = `${API_URL}?${params.toString()}`;
+      const response = await fetch(url);
+      const result = await response.json();
+      
+      if (i === 0 && result.sessionId) {
+        finalSessionId = result.sessionId;
+      }
+    }
+    
+    hideLoader();
+    alert(`Success! ${checkoutItems.length} items saved with ID: ${finalSessionId}`);
+    
+    stopCheckoutScan();
+    checkoutItems = [];
+    goHome();
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+// ====================================
+// 📊 DETAILS (✅ NOUVEAU)
+// ====================================
+function goToDetails() {
+  showScreen('details-scan-screen');
+  startDetailsScan();
+}
+
+function startDetailsScan() {
+  if (isDetailsScanning) return;
+  if (!detailsScanner) {
+    detailsScanner = new Html5Qrcode("details-qr-reader");
+  }
+  detailsScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 220 },
+    decodedText => onDetailsScan(decodedText)
+  ).then(() => {
+    isDetailsScanning = true;
+  }).catch(err => {
+    alert('Camera error');
+  });
+}
+
+function stopDetailsScan() {
+  if (detailsScanner && isDetailsScanning) {
+    detailsScanner.stop().then(() => { 
+      isDetailsScanning = false; 
+    }).catch(() => { 
+      isDetailsScanning = false; 
+    });
+  }
+}
+
+async function onDetailsScan(decodedText) {
+  if (scanCooldown) return;
+  
+  try {
+    const url = new URL(decodedText);
+    const params = new URLSearchParams(url.search);
+    const spreadsheetId = params.get('id');
+    const row = params.get('row');
+    
+    if (spreadsheetId && row) {
+      scanCooldown = true;
+      if (navigator.vibrate) navigator.vibrate(200);
+      await fetchDetailsData(spreadsheetId, row);
+      setTimeout(() => { scanCooldown = false; }, 800);
+    } else {
+      alert('Invalid QR code');
+    }
+  } catch (e) {
+    scanCooldown = false;
+    alert('Invalid QR code');
+  }
+}
+
+async function searchDetailsItem() {
+  const sNumber = document.getElementById('details-search-input').value.trim();
+  
+  if (!sNumber) {
+    alert('Please enter S-Number');
+    return;
+  }
+  
+  showLoader('Searching...');
+  
+  try {
+    const url = `${API_URL}?apiAction=getItemBySNumber&spreadsheetId=${ARCHIVING_SPREADSHEET_ID}&sNumber=${encodeURIComponent(sNumber)}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.error) {
+      alert('S-Number not found');
+      return;
+    }
+    
+    if (result.success && result.data) {
+      currentDetailsData = result.data;
+      document.getElementById('details-search-input').value = '';
+      
+      await loadDetailsHistory(result.data.spreadsheetId, result.data.sourceRow);
+      await loadDetailsSelection(result.data.sNumber); // 🔥 AJOUT
+      renderDetailsView();
+      stopDetailsScan();
+      showScreen('details-view-screen');
+    }
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+async function fetchDetailsData(spreadsheetId, row) {
+  showLoader('Loading...');
+  
+  try {
+    const url = `${API_URL}?apiAction=getItem&id=${spreadsheetId}&row=${row}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.error) {
+      alert('Error: ' + result.error);
+      return;
+    }
+    
+    if (result.success && result.data) {
+      currentDetailsData = result.data;
+      
+      await loadDetailsHistory(spreadsheetId, row);
+      await loadDetailsSelection(result.data.sNumber); 
+      renderDetailsView();
+      stopDetailsScan();
+      showScreen('details-view-screen');
+    }
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+async function loadDetailsHistory(spreadsheetId, row) {
+  try {
+    const url = `${API_URL}?apiAction=getArchivingDetails&id=${spreadsheetId}&row=${row}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    
+    if (result.success && result.entries) {
+      currentDetailsData.history = result.entries;
+    }
+  } catch (error) {
+  }
+}
+async function loadDetailsSelection(sNumber) {
+  try {
+    const response = await fetch(
+      `${API_URL}?apiAction=getSelectionBySNumber&spreadsheetId=${ARCHIVING_SPREADSHEET_ID}&sNumber=${encodeURIComponent(sNumber)}`
+    );
+
+    const result = await response.json();
+
+    const tbody = document.getElementById('details-selection-table-body');
+
+    if (!result.success || !result.selections || result.selections.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="3" style="text-align:center; padding:20px; color:var(--gray-500);">
+            No selection data
+          </td>
+        </tr>
+      `;
+      return;
+    }
+
+    tbody.innerHTML = result.selections.map(item => `
+      <tr style="border-bottom:1px solid var(--gray-200);">
+        <td style="padding:12px;">${item.date || '-'}</td>
+        <td style="padding:12px;">${item.customer || '-'}</td>
+        <td style="padding:12px;">${item.submittedBy || '-'}</td>
+      </tr>
+    `).join('');
+    console.log(document.getElementById('details-selection-table-body'));
+
+  } catch (error) {
+    console.error('Selection load error:', error);
+  }
+}
+
+
+function renderDetailsView() {
+  if (!currentDetailsData) return;
+  
+  document.getElementById('details-reference').textContent = currentDetailsData.reference || 'Details';
+  
+  const imgElement = document.getElementById('details-image');
+  const noImgElement = document.getElementById('details-no-image');
+  
+  if (currentDetailsData.imageUrl) {
+    imgElement.src = currentDetailsData.imageUrl;
+    imgElement.style.display = 'block';
+    noImgElement.style.display = 'none';
+  } else {
+    imgElement.style.display = 'none';
+    noImgElement.style.display = 'block';
+  }
+  
+  const tableBody = document.getElementById('details-table-body');
+  const rows = [
+    { label: 'Reference', value: currentDetailsData.reference },
+    { label: 'S-Number', value: currentDetailsData.sNumber },
+    { label: 'Season', value: currentDetailsData.season },
+    { label: 'Description', value: currentDetailsData.description },
+    { label: 'Fabric Code', value: currentDetailsData.fabricCode },
+    { label: 'Composition', value: currentDetailsData.composition },
+    { label: 'Collection', value: currentDetailsData.collection },
+    { label: 'Total Qty', value: currentDetailsData.totalQty },
+    { label: 'Qty Available', value: currentDetailsData.qtyAvailable }
+  ];
+  
+  tableBody.innerHTML = rows.map(row => `
+    <tr style="border-bottom: 1px solid var(--gray-200);">
+      <td style="padding: 12px 0; font-size: 12px; font-weight: 700; color: var(--gray-600); width: 40%;">${row.label}</td>
+      <td style="padding: 12px 0; font-size: 14px; font-weight: 600; color: var(--black);">${row.value || 'N/A'}</td>
+    </tr>
+  `).join('');
+  
+  // ✅ NOUVEAU : HISTORY EN TABLEAU
+  const historyContainer = document.getElementById('details-history-list');
+  
+  if (!currentDetailsData.history || currentDetailsData.history.length === 0) {
+    historyContainer.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><p class="empty-text">No history</p></div>';
+  } else {
+    historyContainer.innerHTML = `
+      <div style="background: var(--white); border: 2px solid var(--gray-200); border-radius: 20px; padding: 16px; overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 2px solid var(--gray-200);">
+              <th style="padding: 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--gray-600);">#</th>
+              <th style="padding: 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--gray-600);">Date</th>
+              <th style="padding: 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--gray-600);">Check Out</th>
+              <th style="padding: 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--gray-600);">Check In</th>
+              <th style="padding: 12px; text-align: left; font-size: 12px; font-weight: 700; color: var(--gray-600);">Destination</th>
+              <th style="padding: 12px; text-align: center; font-size: 12px; font-weight: 700; color: var(--gray-600);">Qty</th>
+              <th style="padding: 12px; text-align: center; font-size: 12px; font-weight: 700; color: var(--gray-600);">Available</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${currentDetailsData.history.map((entry, index) => `
+              <tr style="border-bottom: 1px solid var(--gray-200);">
+                <td style="padding: 12px; font-size: 14px; font-weight: 700; color: var(--black);">${index + 1}</td>
+                <td style="padding: 12px; font-size: 13px; color: var(--gray-700);">${entry.date || 'N/A'}</td>
+                <td style="padding: 12px; font-size: 13px; color: var(--gray-700);">${entry.checkOutName || '-'}</td>
+                <td style="padding: 12px; font-size: 13px; color: var(--gray-700);">${entry.checkInName || '-'}</td>
+                <td style="padding: 12px; font-size: 13px; color: var(--gray-700);">${entry.destination || '-'}</td>
+                <td style="padding: 12px; text-align: center;">
+                  <span style="padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; background: var(--gray-100); color: var(--gray-600);">${entry.qtyLog || 0}</span>
+                </td>
+                <td style="padding: 12px; text-align: center;">
+                  <span style="padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; background: var(--green-light); color: var(--green);">${entry.qtyAvailable || 0}</span>
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  }
+}
+
+function goBackToDetailsScan() {
+  showScreen('details-scan-screen');
+  startDetailsScan();
+}
+
+
+
+// ====================================
+// 📋 SELECTION
+// ====================================
+function goToSelection() {
+  const today = new Date().toLocaleDateString('en-GB');
+  document.getElementById('selection-date-input').value = today;
+  showScreen('selection-form-screen');
+}
+
+async function searchBySNumber() {
+
+  const input = document.getElementById('manual-snumber-input');
+  const sNumber = input.value.trim().toUpperCase();
+
+  if (!sNumber) {
+    alert('Please enter S-Number');
+    return;
+  }
+
+  showLoader('Searching item...');
+
+  try {
+
+    const response = await fetch(
+      `${GOOGLE_APPS_SCRIPT_URL}?apiAction=getItemBySNumber&spreadsheetId=${ARCHIVING_SPREADSHEET_ID}&sNumber=${encodeURIComponent(sNumber)}`
+    );
+
+    const result = await response.json();
+
+    hideLoader();
+
+    if (result.success) {
+
+      const itemData = result.data;
+      itemData.id = Date.now();
+
+      selectionItems.push(itemData);
+      updateSelectionItemsList();
+      updateSelectionCount();
+
+      input.value = '';
+    } else {
+      alert(result.error || 'Item not found');
+    }
+
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+
+function advanceToSelectionScan() {
+  
+  const input = document.getElementById('customer-input');
+  const customerName = input.value.trim().toUpperCase(); 
+  if (!customerName) {
+    alert('Please enter customer name');
+    return;
+  }
+
+  selectionFormData.customer = customerName;
+  
+  document.getElementById("selection-form-screen").classList.remove("active");
+  document.getElementById("selection-scan-screen").classList.add("active");
+  
+  initSelectionScanner();
+}
+
+function goBackToSelectionForm() {
+  stopCheckoutScan();
+  stopCheckinScan();
+  stopSelectionScan();
+  stopDetailsScan();
+  document.getElementById("selection-scan-screen").classList.remove("active");
+  document.getElementById("selection-form-screen").classList.add("active");
+}
+
+function initSelectionScanner() {
+  if (isSelectionScanning) return;
+  if (!selectionScanner) {
+    selectionScanner = new Html5Qrcode("selection-qr-reader");
+  }
+  selectionScanner.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 220 },
+    decodedText => onSelectionScanSuccess(decodedText)
+  ).then(() => {
+    isSelectionScanning = true;
+  }).catch(err => {
+    alert('Camera error');
+  });
+}
+
+function stopSelectionScan() {
+  if (selectionScanner && isSelectionScanning) {
+    selectionScanner.stop().then(() => { isSelectionScanning = false; }).catch(() => { isSelectionScanning = false; });
+  }
+}
+
+async function onSelectionScanSuccess(decodedText) {
+  if (scanCooldown) return;
+  
+  scanCooldown = true;
+  setTimeout(() => { scanCooldown = false; }, 1000);
+  
+  const urlParams = new URLSearchParams(decodedText.split('?')[1]);
+  const spreadsheetId = urlParams.get('id');
+  const row = urlParams.get('row');
+  
+  if (!spreadsheetId || !row) {
+    alert('Invalid QR code');
+    return;
+  }
+  
+  showLoader('Loading item...');
+  
+  try {
+    const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?apiAction=getItem&id=${spreadsheetId}&row=${row}`);
+    const result = await response.json();
+    hideLoader();
+    
+    if (result.success) {
+      const itemData = result.data;
+      itemData.id = Date.now();
+      selectionItems.push(itemData);
+      updateSelectionItemsList();
+      updateSelectionCount();
+    } else {
+      alert('Error: ' + (result.error || 'Failed to load item'));
+    }
+    
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+
+}
+
+function updateSelectionItemsList() {
+  const itemsList = document.getElementById('selection-items-list');
+
+  if (selectionItems.length === 0) {
+    itemsList.innerHTML = '<div class="empty"><div class="empty-icon">📦</div><p class="empty-text">No items scanned yet</p></div>';
+    return;
+  }
+
+  itemsList.innerHTML = selectionItems.map((item, index) => {
+// Ta variable imageHtml doit ressembler à ceci :
+const imageHtml = item.imageUrl 
+  ? `<img src="${item.imageUrl}" 
+          class="item-image" 
+          referrerpolicy="no-referrer">` // <--- C'EST LA CLÉ
+  : `<div class="item-image-placeholder">No Image</div>`;
+    
+    return `
+      <div class="item">
+        <div class="item-number">${index + 1}</div>
+        ${imageHtml}
+        <div class="item-info">
+          <div class="item-ref-group">
+            <div class="item-label">Reference</div>
+            <div class="item-value">${item.reference}</div>
+          </div>
+          <div class="item-snum-group">
+            <div class="item-label">S-Number</div>
+            <div class="item-value-small">${item.sNumber || 'N/A'}</div>
+          </div>
+        </div>
+        <button class="btn-remove" onclick="removeSelectionItem(${item.id})">×</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function updateSelectionCount() {
+  document.getElementById('selection-count').textContent = selectionItems.length;
+}
+
+function removeSelectionItem(itemId) {
+  selectionItems = selectionItems.filter(item => item.id !== itemId);
+  updateSelectionItemsList();
+  updateSelectionCount();
+}
+
+function clearSelectionItems() {
+  if (selectionItems.length === 0) {
+    alert('No items to clear');
+    return;
+  }
+  
+  if (confirm('Clear all scanned items?')) {
+    selectionItems = [];
+    updateSelectionItemsList();
+    updateSelectionCount();
+  }
+}
+async function generateSelectionPDF() {
+  if (selectionItems.length === 0) {
+    alert('No items to generate PDF');
+    return;
+  }
+  
+  const input = document.getElementById('customer-input');
+  const customerName = input.value.trim().toUpperCase(); 
+  const selectionDate = document.getElementById('selection-date-input').value;
+
+  // 🔹 récupère le username connecté
+ const username = getCurrentUsername();
+
+  // Mise à jour globale pour d'autres fonctions
+  selectionFormData.customer = customerName;
+  selectionFormData.date = selectionDate;
+
+  showLoader('Saving to Selection & Generating PDF...');
+  
+  try {
+    const finalItems = selectionItems.map(item => ({
+      ...item,
+      customer: customerName,
+      date: selectionDate,
+      submittedBy: username // ✅ ajoute username
+    }));
+    console.log('Données envoyées à Apps Script :', finalItems);
+    // 1️⃣ Sauvegarde dans la feuille Selection
+    const saveResponse = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        apiAction: 'saveSelection',
+        items: finalItems,
+        customer: customerName 
+      })
+    });
+    
+    const saveResult = await saveResponse.json();
+    if (!saveResult.success) throw new Error(saveResult.error);
+
+    // 2️⃣ Stockage temporaire pour génération PDF
+    const itemsJson = JSON.stringify(finalItems);
+    const cacheResponse = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?apiAction=storeScanData&items=${encodeURIComponent(itemsJson)}`);
+    const cacheResult = await cacheResponse.json();
+    
+    if (!cacheResult.success) throw new Error('Cache error');
+
+    selectionPDFUrl = `${GOOGLE_APPS_SCRIPT_URL}?action=generateMultiPDF&cacheId=${cacheResult.cacheId}`;
+
+    // 3️⃣ Affichage écran PDF
+    hideLoader();
+    stopSelectionScan();
+    document.getElementById("selection-scan-screen").classList.remove("active");
+    document.getElementById("selection-pdf-screen").classList.add("active");
+    document.getElementById('pdf-item-count').textContent = selectionItems.length;
+
+  } catch (error) {
+    hideLoader();
+    alert('Failed: ' + error.message);
+  }
+}
+
+async function generateMultiItemPDF() {
+  try {
+    const itemsJson = JSON.stringify(selectionItems);
+    const cacheResponse = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?apiAction=storeScanData&items=${encodeURIComponent(itemsJson)}`);
+    const cacheResult = await cacheResponse.json();
+    
+    if (!cacheResult.success) {
+      return { success: false, error: 'Failed to store data in cache' };
+    }
+    
+    const pdfUrl = `${GOOGLE_APPS_SCRIPT_URL}?action=generateMultiPDF&cacheId=${cacheResult.cacheId}`;
+    
+    return {
+      success: true,
+      pdfUrl: pdfUrl
+    };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
+function openSelectionPDF() {
+  if (selectionPDFUrl) {
+    window.open(selectionPDFUrl, '_blank');
+  }
+}
+function goBackToHomeFromPDF() {
+  document.getElementById("selection-pdf-screen").classList.remove("active");
+  document.getElementById("home-screen").classList.add("active");
+  selectionItems = [];
+  selectionFormData = { customer: '', date: '' };
+  selectionPDFUrl = '';
+  handleBackNav('home-screen');
+}
+
+// ====================================
+// Pitch submitted
+// ==================================== 
+async function submitPitch(pitchData) {
+  const username = localStorage.getItem('currentUsername') || 'Unknown';
+  pitchData.submittedBy = username; // ajoute le username
+
+  const response = await fetch(`${GOOGLE_APPS_SCRIPT_URL}?apiAction=savePitch`, {
+    method: 'POST',
+    body: JSON.stringify(pitchData),
+    headers: { 'Content-Type': 'application/json' }
+  });
+
+  const result = await response.json();
+  if(result.success) {
+    alert('Pitch submitted successfully!');
+  } else {
+    alert('Error submitting pitch: ' + (result.error || 'Unknown'));
+  }
+}
+
+async function loadPitchScreen() {
+  showLoader('Loading pitches...');
+
+  try {
+    const response = await fetch(
+      `${GOOGLE_APPS_SCRIPT_URL}?apiAction=getPitchSubmitted&spreadsheetId=${ARCHIVING_SPREADSHEET_ID}`
+    );
+
+    const result = await response.json();
+    hideLoader();
+
+    const tbody = document.getElementById('pitch-tbody');
+    tbody.innerHTML = '';
+    
+    if (!result.success || !result.items || result.items.length === 0) {
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" style="text-align:center; padding:40px; color:var(--gray-500);">
+            No data available
+          </td>
+        </tr>
+      `;
+      return;
+    }
+    // result.items.reverse();
+
+    // Ajoute la ligne de filtres si pas déjà présente
+    addFiltersRow();
+
+    result.items.forEach((item, index) => {
+      const row = document.createElement('tr');
+      row.style.borderBottom = "1px solid var(--gray-200)";
+      
+      const url = item.url || '';
+      row.innerHTML = `
+        <td style="padding:12px;">${item.id}</td>
+        <td style="padding:12px;">${item.customer}</td>
+        <td style="padding:12px;">${item.dateSelection}</td>
+        <td style="padding:12px;">${item.submittedBy || ''}</td> <!-- Nouvelle colonne -->
+        <td>
+          <select onchange="changeStatus('${item.id}', this.value, this)">
+            <option value="New" ${item.status === "New" ? "selected" : ""}>New</option>
+            <option value="WIP" ${item.status === "WIP" ? "selected" : ""}>WIP</option>
+            <option value="Closed" ${item.status === "Closed" ? "selected" : ""}>Closed</option>
+            <option value="Reject" ${item.status === "Reject" ? "selected" : ""}>Reject</option>
+          </select>
+        </td>
+        <td style="text-align:center;">
+          <button class="btn-view-pdf" onclick="openPDF('${url}')" title="View PDF">
+            ➡️
+          </button>
+    </td>
+      `;
+
+      tbody.appendChild(row);
+    });
+
+  } catch (error) {
+    hideLoader();
+    alert('Connection error');
+  }
+}
+
+function openPDF(url) {
+  if (!url) {
+    alert("PDF URL not available");
+    return;
+  }
+  window.open(url, "_blank");
+}
+
+
+function addFiltersRow() {
+  const tbody = document.getElementById('pitch-tbody');
+  if (!tbody) return;
+
+  const table = tbody.closest('table');
+  if (!table) return;
+
+  const thead = table.querySelector('thead');
+  if (!thead) return;
+
+  if (thead.querySelector('.filters-row')) return;
+
+  const filterRow = document.createElement('tr');
+  filterRow.classList.add('filters-row');
+
+  // Colonnes à filtrer : Ref No, Customer, Date, Submitted By, Status
+  const cols = ['refNo', 'customer', 'date', 'submittedBy', 'status'];
+
+  cols.forEach(col => {
+    const th = document.createElement('th');
+
+    if (col === 'status') {
+      const select = document.createElement('select');
+      ['', 'New', 'WIP', 'Closed', 'Reject'].forEach(s => {
+        const option = document.createElement('option');
+        option.value = s;
+        option.text = s === '' ? 'All' : s;
+        select.appendChild(option);
+      });
+      select.addEventListener('change', applyFilters);
+      th.appendChild(select);
+    } else {
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Filter';
+      input.addEventListener('input', applyFilters);
+      th.appendChild(input);
+    }
+
+    filterRow.appendChild(th);
+  });
+
+  thead.appendChild(filterRow);
+}
+function changeStatus(id, newStatus) {
+
+  fetch(`${GOOGLE_APPS_SCRIPT_URL}?apiAction=updatePitchStatus&spreadsheetId=${ARCHIVING_SPREADSHEET_ID}&id=${encodeURIComponent(id)}&newStatus=${encodeURIComponent(newStatus)}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+
+        // Mise à jour locale si nécessaire
+        if (typeof allPitchItems !== "undefined") {
+          const item = allPitchItems.find(i => i.id === id);
+          if (item) item.status = newStatus;
+        }
+
+        // ✅ Notification succès
+        showNotification(`Status changed to "${newStatus}"`, "success");
+
+      } else {
+        showNotification('Failed to update status: ' + (data.error || 'unknown'), "error");
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      showNotification("Connection error while updating status", "error");
+    });
+}
+function showNotification(message, type = "success") {
+
+  const notif = document.createElement("div");
+  notif.textContent = message;
+
+  notif.style.position = "fixed";
+  notif.style.top = "50%";
+  notif.style.left = "50%";
+  notif.style.transform = "translate(-50%, -50%) scale(0.9)";
+  notif.style.padding = "18px 30px";
+  notif.style.borderRadius = "12px";
+  notif.style.color = "white";
+  notif.style.fontSize = "16px";
+  notif.style.fontWeight = "600";
+  notif.style.zIndex = "9999";
+  notif.style.boxShadow = "0 8px 25px rgba(0,0,0,0.25)";
+  notif.style.opacity = "0";
+  notif.style.transition = "all 0.3s ease";
+
+  notif.style.backgroundColor = type === "success" ? "#16a34a" : "#dc2626";
+
+  document.body.appendChild(notif);
+
+  // Animation entrée
+  setTimeout(() => {
+    notif.style.opacity = "1";
+    notif.style.transform = "translate(-50%, -50%) scale(1)";
+  }, 10);
+
+  // Disparition automatique
+  setTimeout(() => {
+    notif.style.opacity = "0";
+    notif.style.transform = "translate(-50%, -50%) scale(0.9)";
+    setTimeout(() => notif.remove(), 300);
+  }, 2500);
+}
+
+
+// Filtrage dynamique
+function applyFilters() {
+  const tbody = document.getElementById('pitch-tbody');
+  if (!tbody) return;
+
+  const table = tbody.closest('table');
+  if (!table) return;
+
+  const filterRow = table.querySelector('.filters-row');
+  if (!filterRow) return;
+
+  const inputs = filterRow.querySelectorAll('input');
+  const statusSelect = filterRow.querySelector('select');
+
+  const refFilter = inputs[0]?.value.toLowerCase() || '';
+  const customerFilter = inputs[1]?.value.toLowerCase() || '';
+  const dateFilter = inputs[2]?.value.toLowerCase() || '';
+  const submittedByFilter = inputs[3]?.value.toLowerCase() || '';
+  const statusFilter = statusSelect?.value || '';
+
+  Array.from(tbody.rows).forEach(row => {
+    const cells = row.cells;
+    const matchRef = !refFilter || cells[0].textContent.toLowerCase().includes(refFilter);
+    const matchCustomer = !customerFilter || cells[1].textContent.toLowerCase().includes(customerFilter);
+    const matchDate = !dateFilter || cells[2].textContent.toLowerCase().includes(dateFilter);
+    const matchSubmittedBy = !submittedByFilter || cells[3].textContent.toLowerCase().includes(submittedByFilter);
+    const matchStatus = !statusFilter || cells[4].querySelector('select')?.value === statusFilter || cells[4].textContent === statusFilter;
+
+    row.style.display = (matchRef && matchCustomer && matchDate && matchSubmittedBy && matchStatus) ? '' : 'none';
+  });
+}
+
+
+
+function goToPitchScreen() {
+  stopCheckoutScan();
+  stopCheckinScan();
+  stopSelectionScan();
+  stopDetailsScan();
+  document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('pitch-screen').classList.add('active');
+
+  loadPitchScreen(); // 🔥 Chargement automatique
+}
+
+// ====================================
+// 📊 OTHER PAGES
+// ====================================
+function goToPitch() {
+  showScreen('pitch-screen');
+  loadPitchScreen();
+}
+
+function goToDashboard() {
+  showScreen('dashboard-screen');
+}
+
+// ====================================
+// 📱 BOTTOM NAV HANDLERS
+// ====================================
+function handleBackNav() {
+  const activeScreen = document.querySelector('.screen.active');
+  if (activeScreen && activeScreen.id !== 'home-screen' && activeScreen.id !== 'login-screen') {
+    goHome();
+  }
+}
+
+function handleSelectionNav() {
+  goToSelection();
+}
+
+function handleHomeNav() {
+  goHome();
+}
+
+function handleCheckInNav() {
+  goToCheckIn();
+}
+
+function handleCheckOutNav() {
+  goToCheckOut();
+}
+
+// ====================================
+// 🔧 UTILITIES
+// ====================================
+function showLoader(message = 'Loading...') {
+  let loader = document.getElementById('loader');
+  if (!loader) {
+    loader = document.createElement('div');
+    loader.id = 'loader';
+    loader.className = 'loader-overlay';
+    loader.innerHTML = `
+      <div class="loader-card">
+        <div class="loader-spinner"></div>
+        <div class="loader-text">${message}</div>
+      </div>
+    `;
+    document.body.appendChild(loader);
+  }
+}
+
+function hideLoader() {
+  const loader = document.getElementById('loader');
+  if (loader) loader.remove();
+}
+
+</script>
+</body>
+</html>
