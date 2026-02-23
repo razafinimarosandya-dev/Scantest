@@ -1098,6 +1098,13 @@ body {
 .btn-view-pdf{
   border-color:transparent;
 }
+.btn-view-pdf:hover{
+  border-color:black;
+  width: 48px;
+  padding: 1px;
+  height: 30px;
+  background-color: rgb(111, 174, 226);
+}
 /* Container principal du pitch-screen */
 #pitch-screen .container {
   display: flex;
@@ -1162,8 +1169,8 @@ body {
 /* pitch mobile */
 
 @media (max-width: 600px) {
-  /* On affiche le header mais on le transforme en zone de recherche */
- 
+  
+
   /* --- Reste du design (Cartes) --- */
   #pitch-screen tbody, #pitch-screen tr, #pitch-screen td {
     display: block;
@@ -1189,8 +1196,9 @@ body {
     width: 100px;
     font-weight: 700;
     color: var(--gray-500);
-    font-size: 11px;
+    font-size: 12px;
     flex-shrink: 0;
+    margin-top: 4px;
   }
 
   #pitch-screen td span {
@@ -3300,41 +3308,8 @@ async function loadPitchScreen() {
       `;
       return;
     }
-    // result.items.reverse();
-
-    // Ajoute la ligne de filtres si pas déjà présente
     addFiltersRow();
 
-    // result.items.forEach((item, index) => {
-    //   const row = document.createElement('tr');
-    //   row.style.borderBottom = "1px solid var(--gray-200)";
-      
-    //   const url = item.url || '';
-    //   row.innerHTML = `
-    //     <td style="padding:12px;">${item.id}</td>
-    //     <td style="padding:12px;">${item.customer}</td>
-    //     <td style="padding:12px;">${item.dateSelection}</td>
-    //     <td style="padding:12px;">${item.submittedBy || ''}</td> <!-- Nouvelle colonne -->
-    //     <td>
-    //       <select onchange="changeStatus('${item.id}', this.value, this)">
-    //         <option value="New" ${item.status === "New" ? "selected" : ""}>New</option>
-    //         <option value="WIP" ${item.status === "WIP" ? "selected" : ""}>WIP</option>
-    //         <option value="Closed" ${item.status === "Closed" ? "selected" : ""}>Closed</option>
-    //         <option value="Reject" ${item.status === "Reject" ? "selected" : ""}>Reject</option>
-    //       </select>
-    //     </td>
-    //     <td style="text-align:center;">
-    //       <button class="btn-view-pdf" onclick="openPDF('${url}')" title="View PDF">
-    //         ➡️
-    //       </button>
-    // </td>
-    //   `;
-
-    //   tbody.appendChild(row);
-    // });
-
-
-    
     result.items.forEach((item, index) => {
   const row = document.createElement('tr');
   const url = item.url || '';
@@ -3356,7 +3331,7 @@ async function loadPitchScreen() {
     </td>
     <td data-label="PDF">
       <span>
-        <button class="btn-view-pdf" onclick="openPDF('${url}')">➡️</button>
+        <button class="btn-view-pdf" onclick="openPDF('${url}')">Click➡️</button>
       </span>
     </td>
   `;
